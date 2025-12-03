@@ -1,6 +1,8 @@
 #include <WiFi.h>
 #include <ESP32MQTTClient.h>
 #include "esp_idf_version.h"
+#include <MaxLedControl.h>
+#include <cstdint>
 
 const char *ssid = "GuestWLANPortal";
 const char *server = "mqtt://10.10.2.127:1883";
@@ -13,8 +15,17 @@ const char *client_id = "lasarpointer";
 ESP32MQTTClient client;
 
 bool laserHit = false;
-#define TRIG 4
-#define ECHO 5
+#define TRIG_PIN 4
+#define ECHO_PIN 5
+#define DIN_PIN 23
+#define CLK_PIN 18
+#define CS_PIN  2
+constexpr uint64_t TIMER_MS = 15 * 60 * 1000 + 1000;
+
+uint64_t start_time;
+
+LedControl display = LedControl(DIN_PIN, CLK_PIN, CS_PIN, 1);
+
 
 void setup() {
   Serial.begin(115200);
@@ -23,26 +34,90 @@ void setup() {
   WiFi.setSleep(false);
 
   pinMode(27, OUTPUT);
-  pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
 
 
   client.setURI(server);
   client.setMqttClientName(client_id);
   client.loopStart();
+      display.begin(15);
+    display.clear();
+    start_time = millis();
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+}
+void displayString(const String& s){  
+    for (uint16_t i = 0; i < (uint16_t)s.length(); i++) {
+        display.setChar(0, 8 - i - 1, s[i], false);
+    }
+    Serial.println(s);
+}
+
+float getUltrasonicDistanceCm(){
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+
+    long duration = pulseIn(ECHO_PIN, HIGH, 30000);
+
+    float distance_cm = duration * 0.034 / 2; // cm
+
+    return distance_cm;
+}
+
+String stringLeftPad(const String& s, const uint16_t len, const char pad){
+    uint16_t pad_len = len - (uint16_t)s.length();
+
+    String pad_str;
+    for (uint16_t i = 0; i < pad_len; i++){
+        pad_str += pad;
+    }
+
+    return pad_str + s;
 }
 
 void loop() {
+   uint64_t elapsed_ms = millis() - start_time;
+String s;
+    if (elapsed_ms > TIMER_MS){
+        Serial.print("alarmmmmmmm");
+        s = "alarmmmmm";
+    }
+    else{
+        uint64_t countdown_ms = TIMER_MS - elapsed_ms;
+        uint64_t countdown_s = countdown_ms / 1000;
 
+        uint16_t minutes = countdown_s / 60;
+        uint16_t seconds = countdown_s % 60;
+
+        s += stringLeftPad(String(minutes), 2, '0');
+        s += ' ';
+        s += stringLeftPad(String(seconds), 2, '0');
+    }
+
+    Serial.println(s);
+
+    displayString(s);
+
+    float distance_cm = getUltrasonicDistanceCm();
+
+    Serial.println(distance_cm);
+
+    if (distance_cm < 10){
+        start_time = millis();
+    }
   // Trigger-Puls
-  digitalWrite(TRIG, LOW);
+  digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH);
+  digitalWrite(TRIG_PIN, HIGH);
   delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
+  digitalWrite(TRIG_PIN, LOW);
 
   // Echo messen
-  long duration = pulseIn(ECHO, HIGH);
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000);
 
   // Distanz berechnen (falls der Sensor Ultraschall nutzt)
   float distance = duration * 0.034 / 2; // cm
@@ -53,16 +128,15 @@ void loop() {
 
   // MQTT Publish
 if (client.isConnected()) {
-    String msg = String(distance);
+    String msg = String(distance_cm);
     client.publish(pub_topic, msg.c_str());
 }
 
-if ( distance > 120){
+if ( distance > 20){
   digitalWrite(27, HIGH);
 } else {
   digitalWrite(27, LOW);
 }
-
 
   delay(200);
 }
