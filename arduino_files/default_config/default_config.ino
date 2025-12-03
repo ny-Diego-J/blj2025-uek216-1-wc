@@ -138,9 +138,9 @@ void loop() {
     client.publish(pub_topic2, String(countdown_ms).c_str());
   }
 
+Serial.println(timer_ms);
 
-
-  delay(100);
+  delay(1000);
 }
 void setup_wifi() {
   Serial.print("Connecting to ");
@@ -157,8 +157,9 @@ void setup_wifi() {
 }
 
 void onMqttConnect(esp_mqtt_client_handle_t client_handle) {
-  client.subscribe(*sub_topic, [](const std::string &payload) {
-    int timer_ms = String(payload.c_str()).toInt();
+  client.subscribe(std::string(sub_topic), [](const std::string &payload) {
+    timer_ms = String(payload.c_str()).toInt();
+    timer_ms = timer_ms * 100;
     Serial.println(timer_ms);
   });
 }
