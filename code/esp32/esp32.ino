@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cmath>
 
-#define WC_ID "02"
+#define WC_ID "01"
 #define WC_PATH "zuerich/wc/"
 #define WC_ID_PATH WC_PATH WC_ID
 
@@ -14,6 +14,10 @@
 #define DIN_PIN 23
 #define CLK_PIN 18
 #define CS_PIN 2
+#define OPENED_THRESHOLD_CM 85
+
+#define NUM_SINES 1
+#define MAX_WAVEFORM (10.f * PI);
 
 const char *ssid = "GuestWLANPortal";
 const char *server = "mqtt://10.10.2.127:1883";
@@ -26,16 +30,95 @@ const char *pub_door_distance = WC_ID_PATH "/etc/door_distance_cm";
  
 const char *client_id = "wc" WC_ID;
 
+float freqs[NUM_SINES] = {1.f};
+float amps[NUM_SINES] = {10.f};
+float delta = 0.015f;
+float t = 0.f;
 
-const float opened_threshold_cm = 85;
+
 
 uint64_t max_time_ms = 15 * 60 * 1000; // default 15 minutes
+int _alarm = false;
 uint64_t start_time_ms;
 uint64_t countdown_ms; // milliseconds left
 float door_distance_cm;
- 
+
+
+uint32_t xor_mask = 67676767;
+
 LedControl display = LedControl(DIN_PIN, CLK_PIN, CS_PIN, 1);
 ESP32MQTTClient client;
+
+float getWaveformX(){
+
+  float val = 0.f;
+  for (uint16_t i = 0; i < NUM_SINES; i++){
+    val += amps[i] * sin(freqs[i] * t);
+  }
+
+  t += delta;
+
+  t = fmod(t, 2 * PI);
+
+  return val / MAX_WAVEFORM;
+}
+
+void playFrequency(uint16_t freq_ms, uint16_t time_ms){
+  uint64_t start = millis();
+  uint64_t end = start + time_ms;
+
+  while (millis() < end){
+      digitalWrite(27, HIGH);
+      vTaskDelay(freq_ms / portTICK_PERIOD_MS);
+      digitalWrite(27, LOW);
+      vTaskDelay(freq_ms / portTICK_PERIOD_MS);
+  }
+}
+
+void playPWM(uint16_t duty, uint16_t cycle, uint16_t time_ms){
+  uint64_t start = millis();
+  uint64_t end = start + time_ms;
+
+  while (millis() < end){
+    uint64_t start_duty = millis();
+    uint64_t end_duty = start_duty + duty;
+    while (millis() < end_duty){
+      digitalWrite(27, HIGH);
+      yield();
+      //vTaskDelay(1 * portTICK_PERIOD_MS);
+      digitalWrite(27, LOW);
+      yield();
+      //vTaskDelay(1 * portTICK_PERIOD_MS);
+    }
+    vTaskDelay((1 + cycle - duty) * portTICK_PERIOD_MS);
+  }
+}
+
+void alarmThread(void* pvParameters){
+  (void)(pvParameters);
+
+  while (true){
+    while (_alarm){
+      float w = getWaveformX();
+
+      uint32_t duty = (int32_t)((w + 1) * 3);
+
+      playPWM(duty, 7, 50);
+
+      //digitalWrite(27, HIGH);
+      //vTaskDelay(duty / portTICK_PERIOD_MS);
+      //digitalWrite(27, LOW);
+      //vTaskDelay(duty / portTICK_PERIOD_MS);
+    }
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+  }
+}
+
+
+// Xor is its own inverse, so this works for decipher and cipher
+uint32_t cipher(void* x){
+  return (*(uint32_t*)x) ^ xor_mask;
+}
 
 void mqttPublisher(void* pvParameters){
     (void)pvParameters;
@@ -43,17 +126,17 @@ void mqttPublisher(void* pvParameters){
     char msg[32];
 
     while (1){
-      // MQTT Publish
+      // cipher and MQTT Publish
       if (client.isConnected()) {
-          snprintf(msg, 32, "%f", door_distance_cm);
+          //Serial.printf("raw %f, xored %lu", door_distance_cm, (unsigned long)encoded);
+          snprintf(msg, 32, "%lu", (unsigned long) cipher(&door_distance_cm));
           client.publish(pub_door_distance, msg);
 
-          snprintf(msg, 32, "%llu", countdown_ms);
+          snprintf(msg, 32, "%lu", (unsigned long) cipher(&countdown_ms));
           client.publish(pub_time_remaining, msg);
       }
       else{
           Serial.println("disconnected :((((");
-
           setup_wifi();
       }
       
@@ -70,11 +153,13 @@ void countdownDisplayer(void* pvParameters){
 
     if (elapsed_ms > max_time_ms) {
       // countdown reached 0
-      Serial.print("alarm");
-      strncpy(s, "alarm", 32);
+      _alarm = true;
+      Serial.print("71nnE UP");
+      strncpy(s, "71nnE UP", 32);
       countdown_ms = 0;
-    } 
+    }
     else {
+      _alarm = false;
       countdown_ms = max_time_ms - elapsed_ms;
       uint64_t countdown_s = countdown_ms / 1000;
 
@@ -83,8 +168,6 @@ void countdownDisplayer(void* pvParameters){
 
       snprintf(s, 32, "%.2d %.2d", minutes, seconds);
     }
-
-    Serial.println(s);
 
     display.clearDisplay(0);
  
@@ -130,6 +213,14 @@ void setup() {
   client.setURI(server);
   client.setMqttClientName(client_id);
   client.loopStart();
+  while (!client.isConnected()) {
+    delay(10);
+  }
+
+  // publish default max_time
+  //char msg[32];
+  //snprintf(msg, 32, "%llu", cipher(&max_time_ms));
+  //client.publish(sub_max_time, msg);
  
   pinMode(27, OUTPUT);
   pinMode(TRIG_PIN, OUTPUT);
@@ -159,6 +250,14 @@ void setup() {
     1,
     NULL
   );
+  xTaskCreate(
+    alarmThread,
+    "alarmThread",
+    2048,
+    NULL,
+    1,
+    NULL
+  );
 }
  
 void loop() {
@@ -166,13 +265,14 @@ void loop() {
  
   Serial.println(door_distance_cm);
  
-  if (door_distance_cm < opened_threshold_cm) {
+  if (door_distance_cm < OPENED_THRESHOLD_CM) {
     // reset timer
     start_time_ms = millis();
   }
  
   Serial.print("distance: ");
   Serial.print(door_distance_cm);
+  Serial.println(max_time_ms);
 
   delay(300);
 }
@@ -192,8 +292,8 @@ void setup_wifi() {
  
 void onMqttConnect(esp_mqtt_client_handle_t client_handle) {
   client.subscribe(std::string(sub_max_time), [](const std::string &payload) {
-    max_time_ms = std::stoull(payload.c_str(), NULL, 10);
-    Serial.println(max_time_ms);
+    uint32_t ciphered = (uint32_t) std::stoull(payload.c_str(), NULL, 10);
+    max_time_ms = cipher(&ciphered);
   });
 }
  
