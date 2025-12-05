@@ -1,0 +1,943 @@
+[
+    {
+        "id": "6285c83c19c86c13",
+        "type": "ui_slider",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "label": "Max Time 1",
+        "tooltip": "In Minutes",
+        "group": "6de2548d3c0fc77b",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "1",
+        "max": "60",
+        "step": "0.01",
+        "className": "",
+        "x": 650,
+        "y": 1060,
+        "wires": [
+            [
+                "ac64108783719d79"
+            ]
+        ]
+    },
+    {
+        "id": "a6a56ef56ff46221",
+        "type": "mqtt out",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/01/max_time_ms",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b467710c2029931f",
+        "x": 1280,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "ac64108783719d79",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to milisec",
+        "func": "msg.payload = msg.payload * 1000 * 60;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1060,
+        "wires": [
+            [
+                "40547bde77d606b6"
+            ]
+        ]
+    },
+    {
+        "id": "1e23171f5ac2b2c0",
+        "type": "ui_slider",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "label": "Max Time 2",
+        "tooltip": "In Minutes",
+        "group": "66160bd033b6891f",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": "1",
+        "max": "60",
+        "step": "0.1",
+        "className": "",
+        "x": 650,
+        "y": 1120,
+        "wires": [
+            [
+                "9888a475b745a8c5"
+            ]
+        ]
+    },
+    {
+        "id": "051367cba4967013",
+        "type": "mqtt out",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/02/max_time_ms",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b467710c2029931f",
+        "x": 1280,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "9888a475b745a8c5",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to milisec",
+        "func": "msg.payload = msg.payload * 1000 * 60;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1120,
+        "wires": [
+            [
+                "6df2a1e28a27eaa0"
+            ]
+        ]
+    },
+    {
+        "id": "ac2d6db479287342",
+        "type": "ui_gauge",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "group": "6de2548d3c0fc77b",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "time remaining [%max]",
+        "label": "",
+        "format": "{{value}}",
+        "min": "100",
+        "max": "0",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1560,
+        "y": 580,
+        "wires": [],
+        "inputLabels": [
+            "Max Time"
+        ]
+    },
+    {
+        "id": "552c4ecf2e987077",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/01/time_remaining_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 680,
+        "y": 520,
+        "wires": [
+            [
+                "6dbd8ca52f44cb7a"
+            ]
+        ]
+    },
+    {
+        "id": "004b4ad38474e477",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/02/time_remaining_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 700,
+        "y": 440,
+        "wires": [
+            [
+                "fddb577057954661"
+            ]
+        ]
+    },
+    {
+        "id": "1ab2e170016b0037",
+        "type": "ui_gauge",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "group": "66160bd033b6891f",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "time remaining [%max]",
+        "label": "",
+        "format": "{{value}}",
+        "min": "100",
+        "max": "0",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1600,
+        "y": 380,
+        "wires": [],
+        "inputLabels": [
+            "Max Time"
+        ]
+    },
+    {
+        "id": "9578bf04282cd647",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to percent",
+        "func": "var max_time = flow.get(\"max_time2\");\n\nvar percent = msg.payload / max_time * 100;\n\nmsg.payload = Math.round(percent * 100) / 100;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 380,
+        "wires": [
+            [
+                "d350853d11fab723"
+            ]
+        ]
+    },
+    {
+        "id": "9cd7357fd42f83e1",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to percent",
+        "func": "var max_time = flow.get(\"max_time1\");\n\nvar percent = msg.payload / max_time * 100;\n\nmsg.payload = percent;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 580,
+        "wires": [
+            [
+                "d32ac83a494dcc23"
+            ]
+        ]
+    },
+    {
+        "id": "0c017001c77efdcd",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/02/max_time_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 700,
+        "y": 680,
+        "wires": [
+            [
+                "ccac8fbcf7cb4ac8"
+            ]
+        ]
+    },
+    {
+        "id": "5fe692a7ac74b4ab",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "make flow",
+        "func": "flow.set(\"max_time2\",msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "93de786447d22972",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/01/max_time_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 700,
+        "y": 740,
+        "wires": [
+            [
+                "6415d9ba0f7f8ba4"
+            ]
+        ]
+    },
+    {
+        "id": "bb4b570d4d7d9e32",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "make flow",
+        "func": "flow.set(\"max_time1\",msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "12dcedd2dff13c07",
+        "type": "ui_text",
+        "z": "3c1a9d82e45b7067",
+        "group": "66160bd033b6891f",
+        "order": 5,
+        "width": "5",
+        "height": "1",
+        "name": "",
+        "label": "time remaining [minutes]",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1610,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "964f5a7cb8dd52f1",
+        "type": "ui_text",
+        "z": "3c1a9d82e45b7067",
+        "group": "6de2548d3c0fc77b",
+        "order": 5,
+        "width": "5",
+        "height": "1",
+        "name": "",
+        "label": "time remaining [minutes]",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1590,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "30d920b8d04d5bef",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to minutes",
+        "func": "msg.payload = msg.payload / 1000 / 60;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 520,
+        "wires": [
+            [
+                "0fd64b291eaa2c45"
+            ]
+        ]
+    },
+    {
+        "id": "99a23a568a485d7c",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/01/time_remaining_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 680,
+        "y": 580,
+        "wires": [
+            [
+                "d84847a3431e8d95"
+            ]
+        ]
+    },
+    {
+        "id": "78838ea7d18e5191",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/02/time_remaining_ms",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 700,
+        "y": 380,
+        "wires": [
+            [
+                "56d1148553fee0f1"
+            ]
+        ]
+    },
+    {
+        "id": "bad28c7116f848fb",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "to minutes",
+        "func": "msg.payload = msg.payload / 1000 / 60;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 440,
+        "wires": [
+            [
+                "8e6da2f9e9568921"
+            ]
+        ]
+    },
+    {
+        "id": "0fd64b291eaa2c45",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "round2",
+        "func": "msg.payload = Math.round(msg.payload * 100) / 100;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 520,
+        "wires": [
+            [
+                "964f5a7cb8dd52f1"
+            ]
+        ]
+    },
+    {
+        "id": "d32ac83a494dcc23",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "round2",
+        "func": "msg.payload = Math.round(msg.payload * 100) / 100;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 580,
+        "wires": [
+            [
+                "ac2d6db479287342"
+            ]
+        ]
+    },
+    {
+        "id": "8e6da2f9e9568921",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "round2",
+        "func": "msg.payload = Math.round(msg.payload * 100) / 100;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1380,
+        "y": 440,
+        "wires": [
+            [
+                "12dcedd2dff13c07"
+            ]
+        ]
+    },
+    {
+        "id": "d350853d11fab723",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "round2",
+        "func": "msg.payload = Math.round(msg.payload * 100) / 100;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1380,
+        "y": 380,
+        "wires": [
+            [
+                "1ab2e170016b0037"
+            ]
+        ]
+    },
+    {
+        "id": "56d1148553fee0f1",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 380,
+        "wires": [
+            [
+                "9578bf04282cd647"
+            ]
+        ]
+    },
+    {
+        "id": "fddb577057954661",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 440,
+        "wires": [
+            [
+                "bad28c7116f848fb"
+            ]
+        ]
+    },
+    {
+        "id": "6dbd8ca52f44cb7a",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 520,
+        "wires": [
+            [
+                "30d920b8d04d5bef"
+            ]
+        ]
+    },
+    {
+        "id": "d84847a3431e8d95",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 580,
+        "wires": [
+            [
+                "9cd7357fd42f83e1"
+            ]
+        ]
+    },
+    {
+        "id": "ccac8fbcf7cb4ac8",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded; \nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 680,
+        "wires": [
+            [
+                "5fe692a7ac74b4ab"
+            ]
+        ]
+    },
+    {
+        "id": "6415d9ba0f7f8ba4",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 740,
+        "wires": [
+            [
+                "bb4b570d4d7d9e32"
+            ]
+        ]
+    },
+    {
+        "id": "40547bde77d606b6",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "cipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 1060,
+        "wires": [
+            [
+                "a6a56ef56ff46221"
+            ]
+        ]
+    },
+    {
+        "id": "6df2a1e28a27eaa0",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "cipher uint32",
+        "func": "// vibe code\n\nconst passwd = 67676767;  // 32-bit key\n\nlet encoded = Number(msg.payload);\nlet decoded = encoded ^ passwd;\n\nmsg.payload = decoded;      // a normal JS number\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 1120,
+        "wires": [
+            [
+                "051367cba4967013"
+            ]
+        ]
+    },
+    {
+        "id": "666b2e347789c818",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/02/in_use",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 680,
+        "y": 860,
+        "wires": [
+            [
+                "3b10b2431f3974c4"
+            ]
+        ]
+    },
+    {
+        "id": "3b10b2431f3974c4",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher bool",
+        "func": "let xorMask = 67676767;\nlet encoded = Number(msg.payload);\n\n// 1. Undo XOR\nlet packet = encoded ^ xorMask;\n\n// 2. Extract the upper 8 bits\nlet rawBool = packet >>> 24;\n\n// 3. Convert to actual boolean\nmsg.payload = rawBool !== 0;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 860,
+        "wires": [
+            [
+                "6d838ff727f8b4c1"
+            ]
+        ]
+    },
+    {
+        "id": "0982c1ba680e8eb5",
+        "type": "ui_template",
+        "z": "3c1a9d82e45b7067",
+        "group": "66160bd033b6891f",
+        "name": "",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"display:flex; justify-content:center; align-items:center; height:100%;\" id=\"statusBox1_1\">\n    <div id=\"statusBox1\" style=\"\n        width:150px; \n        height:150px; \n        background-color:red; \n        color:white;\n        display:flex; \n        justify-content:center; \n        align-items:center; \n        font-size:20px; \n        font-weight:bold;\n        border-radius:10px;\n        transition: background-color 0.5s;\n    \">\n        in use\n    </div>\n</div>\n\n<script>\n    (function(scope) {\n    scope.$watch('msg.payload', function(value) {\n        const box = document.getElementById('statusBox1');\n        if(value === true) {\n            box.style.backgroundColor = 'green';\n            box.textContent = 'free';\n        } else {\n            box.style.backgroundColor = 'red';\n            box.textContent = 'in use';\n        }\n    });\n})(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1280,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e745cccaa4e703db",
+        "type": "mqtt in",
+        "z": "3c1a9d82e45b7067",
+        "name": "",
+        "topic": "zuerich/wc/01/in_use",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b467710c2029931f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 680,
+        "y": 920,
+        "wires": [
+            [
+                "98c57414f4c071b4"
+            ]
+        ]
+    },
+    {
+        "id": "98c57414f4c071b4",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "decipher bool",
+        "func": "let xorMask = 67676767;\nlet encoded = Number(msg.payload);\n\n// 1. Undo XOR\nlet packet = encoded ^ xorMask;\n\n// 2. Extract the upper 8 bits\nlet rawBool = packet >>> 24;\n\n// 3. Convert to actual boolean\nmsg.payload = rawBool !== 0;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 920,
+        "wires": [
+            [
+                "f41f2daa35f05c5f"
+            ]
+        ]
+    },
+    {
+        "id": "6d838ff727f8b4c1",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "invert",
+        "func": "msg.payload = !(msg.payload)\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1110,
+        "y": 860,
+        "wires": [
+            [
+                "0982c1ba680e8eb5"
+            ]
+        ]
+    },
+    {
+        "id": "f41f2daa35f05c5f",
+        "type": "function",
+        "z": "3c1a9d82e45b7067",
+        "name": "invert",
+        "func": "msg.payload = !(msg.payload)\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1110,
+        "y": 920,
+        "wires": [
+            [
+                "11d03ba96cca03dc"
+            ]
+        ]
+    },
+    {
+        "id": "11d03ba96cca03dc",
+        "type": "ui_template",
+        "z": "3c1a9d82e45b7067",
+        "group": "6de2548d3c0fc77b",
+        "name": "",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"display:flex; justify-content:center; align-items:center; height:100%;\" id=\"statusBox1_2\">\n    <div id=\"statusBox2\" style=\"\n        width:150px; \n        height:150px; \n        background-color:red; \n        color:white;\n        display:flex; \n        justify-content:center; \n        align-items:center; \n        font-size:20px; \n        font-weight:bold;\n        border-radius:10px;\n        transition: background-color 0.5s;\n    \">\n        in use\n    </div>\n</div>\n\n<script>\n    (function(scope) {\n    scope.$watch('msg.payload', function(value) {\n        const box = document.getElementById('statusBox2');\n        if(value === true) {\n            box.style.backgroundColor = 'green';\n            box.textContent = 'free';\n        } else {\n            box.style.backgroundColor = 'red';\n            box.textContent = 'in use';\n        }\n    });\n})(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1280,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6de2548d3c0fc77b",
+        "type": "ui_group",
+        "name": "Stall 1",
+        "tab": "ccad4c052d6b26a6",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b467710c2029931f",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.10.2.127",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "66160bd033b6891f",
+        "type": "ui_group",
+        "name": "Stall 2",
+        "tab": "ccad4c052d6b26a6",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ccad4c052d6b26a6",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
